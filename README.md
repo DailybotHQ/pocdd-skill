@@ -73,6 +73,57 @@ command directly:
 - "work the calendar poc" / "close the gaps" → **pocdd-work**
 - "what's left on calendar?" → **pocdd-status**
 
+## How to use
+
+A typical feature flows through five steps.
+
+**1. Create** a POC from any source — a sentence, an issue, a doc, or a URL:
+
+```
+/poc "sync Google Calendar out-of-office into Dailybot time-off"
+```
+
+This creates one file in `.pocs/`, picks the format by risk (runnable `.py`/`.js`
+when there's external behavior to prove, `.md` otherwise), writes the **Goal**, and
+**seeds the gaps** — including a failure-mode sweep (auth/token refresh, pagination,
+rate limits, partial failures, time zones).
+
+**2. Shape it** — run the gap-closing engine:
+
+```
+/poc work calendar
+```
+
+The agent closes the `[agent]` investigation gaps itself (running, reading, proving)
+and moves each result into **Implementation** with provenance. Decisions it can't
+make become `[user]` gaps: it records a default assumption, links the affected work,
+and **keeps going**. At the end of a pass it surfaces the open decisions in a batch.
+
+**3. Resolve decisions, then loop.** Answer the `[user]` gaps and run `/poc work`
+again. Repeat until **Remaining gaps** is empty (`ready-to-implement`) — or the POC
+concludes `not-viable`, which is a valid, cheap outcome.
+
+**4. Inspect any time:**
+
+```
+/poc status calendar   # phase + gaps split by [agent]/[user] + next action
+/poc list              # every POC with phase + gap counts
+/poc verify calendar   # pass/fail well-formedness (gates implement)
+```
+
+**5. Implement**, then retire:
+
+```
+/poc implement calendar   # port the proven Implementation into the product
+/poc archive calendar     # keep it as a parity/regression oracle …
+/poc remove calendar      # … or delete it
+```
+
+> **Tip — cheap enough for small models.** Front-load the reasoning by seeding a
+> good gap list once (a strong model or a human at `create`), then let a smaller
+> model close gaps one at a time. Trust comes from each directive's runnable
+> done-check, not from model size.
+
 ## The `.pocs/` convention
 
 All POC files live under `.pocs/` at the repo root — **gitignored in its
