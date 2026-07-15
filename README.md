@@ -1,4 +1,4 @@
-# POCDD — POC Driven Development
+# POCDD — Proof of Concept Driven Development
 
 **Models matter. Context matters more.**
 
