@@ -1,0 +1,15 @@
+# POC working state — never commit. POCDD files are per-developer, per-feature
+# context, not source. This mirrors DeepWorkPlan's .dwp/ convention.
+.pocs/
+
+# Python / tooling noise
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+
+# OS / editor
+.DS_Store
+*.swp
+tmp/
