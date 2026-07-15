@@ -66,10 +66,40 @@ the agent records a default assumption, links the affected work, and keeps going
 
 ## Install
 
-### `npx skills` (cross-agent, recommended)
+Pick whichever fits your setup — all four leave `skills/pocdd/` discoverable by
+your agent.
+
+### Ask your agent
+
+Paste this to any coding agent (Cursor, Claude Code, Copilot, …):
+
+> Install the POCDD agent skill from the `DailybotHQ/pocdd-skill` repo (it follows
+> the Open Agent Skills standard). Run `npx skills add DailybotHQ/pocdd-skill`, or
+> clone the repo and run `./setup.sh`. Then use the `/poc` commands.
+
+### Package runner — `skills` CLI (cross-agent, recommended)
+
+Use the runner for whichever package manager you have — same command:
 
 ```bash
-npx skills add DailybotHQ/pocdd-skill
+npx     skills add DailybotHQ/pocdd-skill   # npm
+pnpm dlx skills add DailybotHQ/pocdd-skill  # pnpm
+yarn dlx skills add DailybotHQ/pocdd-skill  # yarn
+bunx    skills add DailybotHQ/pocdd-skill   # bun
+```
+
+Add `-g` for a global install and `-a <agent>` to target one agent (e.g.
+`-a cursor`). See the [Skills CLI](https://github.com/vercel-labs/skills) docs.
+
+### curl (no Node required)
+
+Self-contained installer — clones into a cache dir and links it into every agent
+it detects:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash
+# target one agent:
+curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash -s -- --host claude
 ```
 
 ### Git clone + setup
