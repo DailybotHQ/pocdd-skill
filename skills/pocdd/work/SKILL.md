@@ -2,7 +2,7 @@
 name: pocdd-work
 description: Run the POCDD gap-closing loop on an existing POC file — close [agent] investigation gaps autonomously, defer [user] decision gaps with a recorded assumption, and advance the file toward ready-to-implement without ever stopping execution. Use for "/poc work <name>" or "close the gaps".
 version: "0.1.0"
-documentation_url: https://github.com/DailybotHQ/POCDD
+documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 ---

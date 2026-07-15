@@ -2,7 +2,7 @@
 name: pocdd-archive
 description: Archive a done POC out of the active set but keep it as a parity/regression oracle, moving it under .pocs/archive/. Use for "/poc archive <name>" after implementation.
 version: "0.1.0"
-documentation_url: https://github.com/DailybotHQ/POCDD
+documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Glob
 ---

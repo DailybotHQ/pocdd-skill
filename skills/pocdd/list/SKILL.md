@@ -2,7 +2,7 @@
 name: pocdd-list
 description: List every POC in .pocs/ with its phase and gap counts (split by [agent]/[user]). Read-only. Use for "/poc list" or "show the pocs".
 version: "0.1.0"
-documentation_url: https://github.com/DailybotHQ/POCDD
+documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob
 ---

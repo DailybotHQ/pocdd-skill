@@ -2,7 +2,7 @@
 name: pocdd-status
 description: Report the status of a single POC file — phase, findings, and remaining gaps split by [agent]/[user], plus what is blocking and the suggested next action. Read-only. Use for "/poc status <name>" or "what's left on <name>".
 version: "0.1.0"
-documentation_url: https://github.com/DailybotHQ/POCDD
+documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob
 ---

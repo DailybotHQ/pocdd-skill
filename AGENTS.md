@@ -12,9 +12,11 @@ standard, MIT.
 ## Ship boundary (critical)
 
 **Only `skills/pocdd/` ships.** Everything else — `README.md`, `AGENTS.md`,
-`CLAUDE.md`, `setup.sh`, `CHANGELOG.md`, `docs/`, `.gitignore` — is repo-dev
-infrastructure and must never be referenced by the skill at runtime. When in
-doubt, ask: "would a user who installed only `skills/pocdd/` still have this?"
+`CLAUDE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `setup.sh`, `CHANGELOG.md`,
+`scripts/`, `docs/`, `.github/`, `.gitignore` — is repo-dev infrastructure and
+must never be referenced by the skill at runtime. When in doubt, ask: "would a
+user who installed only `skills/pocdd/` still have this?" (`scripts/check.sh`
+enforces this boundary.)
 
 ## Skill layout
 
@@ -37,7 +39,7 @@ Every `SKILL.md` MUST carry valid YAML frontmatter:
 name: pocdd[-<command>]          # router is "pocdd"; sub-skills "pocdd-<command>"
 description: <when to use — drives auto-routing; be specific>
 version: "<x.y.z>"               # keep all skills in lockstep
-documentation_url: https://github.com/DailybotHQ/POCDD
+documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: <minimal set>     # read-only skills omit Edit/Write
 ---
@@ -64,7 +66,9 @@ spec's "Design decisions" table.
 
 ## Pre-commit checklist
 
-1. `bash -n skills/pocdd/shared/context.sh skills/pocdd/verify/verify.sh`
+Run `./scripts/check.sh` — it covers 1–3 below (and is what CI runs). Then confirm 4.
+
+1. Shell syntax (`bash -n`) + `shellcheck` on every script.
 2. Every `SKILL.md` has complete, valid frontmatter with the lockstep `version`.
 3. Nothing outside `skills/pocdd/` is required at runtime (ship boundary holds).
 4. `CHANGELOG.md` updated for user-visible changes.

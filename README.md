@@ -2,18 +2,37 @@
 
 **Models matter. Context matters more.**
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Format: Open Agent Skills](https://img.shields.io/badge/format-Open%20Agent%20Skills-blue.svg)](https://agentskills.io)
+[![CI](https://github.com/DailybotHQ/pocdd-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/DailybotHQ/pocdd-skill/actions/workflows/ci.yml)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 POCDD is a methodology — and an installable agent skill — for building complex
 product features with AI agents. For each feature you own **one self-contained
 file** under `.pocs/`: the *prompt*, the *spec*, and the *handoff* in a single
 artifact. An agent **closes gaps** in that file until nothing blocks the goal, then
 the proven result is implemented into the product.
 
-- **License:** MIT
+- **License:** [MIT](LICENSE)
 - **Format:** [Open Agent Skills](https://agentskills.io) standard (Markdown-only)
 - **Methodology:** [`skills/pocdd/spec/POCDD.md`](skills/pocdd/spec/POCDD.md)
 
 > Inspired by [DeepWorkPlan](https://github.com/DailybotHQ/deepworkplan-skill),
 > built lean for a single methodology and one command surface.
+
+---
+
+## Contents
+
+- [The idea in one breath](#the-idea-in-one-breath)
+- [The `/poc` commands](#the-poc-commands)
+- [Install](#install)
+- [How to use](#how-to-use)
+- [The `.pocs/` convention](#the-pocs-convention)
+- [Repository layout](#repository-layout)
+- [Local development](#local-development)
+- [What ships](#what-ships)
+- [Contributing](#contributing)
 
 ---
 
@@ -47,17 +66,47 @@ the agent records a default assumption, links the affected work, and keeps going
 
 ## Install
 
-### `npx skills` (cross-agent, recommended)
+Pick whichever fits your setup — all four leave `skills/pocdd/` discoverable by
+your agent.
+
+### Ask your agent
+
+Paste this to any coding agent (Cursor, Claude Code, Copilot, …):
+
+> Install the POCDD agent skill from the `DailybotHQ/pocdd-skill` repo (it follows
+> the Open Agent Skills standard). Run `npx skills add DailybotHQ/pocdd-skill`, or
+> clone the repo and run `./setup.sh`. Then use the `/poc` commands.
+
+### Package runner — `skills` CLI (cross-agent, recommended)
+
+Use the runner for whichever package manager you have — same command:
 
 ```bash
-npx skills add DailybotHQ/POCDD
+npx     skills add DailybotHQ/pocdd-skill   # npm
+pnpm dlx skills add DailybotHQ/pocdd-skill  # pnpm
+yarn dlx skills add DailybotHQ/pocdd-skill  # yarn
+bunx    skills add DailybotHQ/pocdd-skill   # bun
+```
+
+Add `-g` for a global install and `-a <agent>` to target one agent (e.g.
+`-a cursor`). See the [Skills CLI](https://github.com/vercel-labs/skills) docs.
+
+### curl (no Node required)
+
+Self-contained installer — clones into a cache dir and links it into every agent
+it detects:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash
+# target one agent:
+curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash -s -- --host claude
 ```
 
 ### Git clone + setup
 
 ```bash
-git clone https://github.com/DailybotHQ/POCDD.git ~/POCDD
-cd ~/POCDD && ./setup.sh           # auto-detect installed agents
+git clone https://github.com/DailybotHQ/pocdd-skill.git ~/pocdd-skill
+cd ~/pocdd-skill && ./setup.sh     # auto-detect installed agents
 ./setup.sh --host claude           # or target one agent explicitly
 ```
 
@@ -131,16 +180,60 @@ entirety**. POC files are per-developer working state, not committed source; the
 durable record is this methodology plus whatever graduates into `docs/` and the
 product. Override the location with `POCS_DIR`.
 
+## Repository layout
+
+```text
+pocdd-skill/
+├── skills/pocdd/            # ← the product (everything that ships)
+│   ├── SKILL.md             # router — owns the /poc command surface
+│   ├── shared/              # context.sh + conventions.md sourced by sub-skills
+│   ├── spec/POCDD.md        # the canonical methodology
+│   ├── templates/           # poc.md / poc.py starting points
+│   ├── create/  work/  status/  list/  verify/    # one folder per /poc subcommand
+│   └── implement/  archive/  remove/  clear/
+├── docs/DESIGN.md           # the "why" behind the lean structure
+├── scripts/check.sh         # one-command checks (also run in CI)
+├── setup.sh                 # symlink installer for local/manual installs
+├── AGENTS.md                # rules for agents working ON this repo
+├── CONTRIBUTING.md          # rules for humans working ON this repo
+├── SECURITY.md              # what not to put in a POC + how to report issues
+└── CHANGELOG.md
+```
+
+## Local development
+
+You don't need a language toolchain — the skill is Markdown plus a couple of Bash
+helpers. To validate a change the way CI does, run the check script:
+
+```bash
+./scripts/check.sh
+```
+
+It runs `bash -n` on every shell script, validates each `SKILL.md`'s frontmatter,
+and exercises `skills/pocdd/verify/verify.sh` against the templates. To try the
+skill against a real agent, symlink it into your agent's skills directory:
+
+```bash
+./setup.sh --host claude    # or: cursor, codex, copilot, gemini
+```
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full workflow (branch, checks,
+commit format, PR) and [`AGENTS.md`](AGENTS.md) for the agent-facing contract.
+
 ## What ships
 
 Only [`skills/pocdd/`](skills/pocdd/) is the product. Everything else
-(`README.md`, `AGENTS.md`, `setup.sh`, `docs/`) is repository infrastructure.
+(`README.md`, `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, `setup.sh`,
+`scripts/`, `docs/`, `.github/`) is repository infrastructure and is **not**
+installed by `npx skills` or `setup.sh`.
 
 ## Contributing
 
-See [`AGENTS.md`](AGENTS.md) for the rules that govern work on the skill (ship
-boundary, `SKILL.md` frontmatter contract, versioning, commit format). Background
-on the layout is in [`docs/DESIGN.md`](docs/DESIGN.md).
+New contributors: start with [`CONTRIBUTING.md`](CONTRIBUTING.md) — it covers
+local setup, the one-command check, commit format, and the PR flow. The
+agent-facing contract (ship boundary, `SKILL.md` frontmatter, versioning) lives in
+[`AGENTS.md`](AGENTS.md), and the design rationale in
+[`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Powered by Dailybot
 

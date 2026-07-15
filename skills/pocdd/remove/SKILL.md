@@ -2,7 +2,7 @@
 name: pocdd-remove
 description: Delete a single POC file from .pocs/ after confirmation. Use for "/poc remove <name>". Destructive — always confirm first.
 version: "0.1.0"
-documentation_url: https://github.com/DailybotHQ/POCDD
+documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Glob
 ---
