@@ -2,7 +2,7 @@
 name: pocdd-implement
 description: Port a ready-to-implement POC's Implementation section into the product, executing each directive against its acceptance check. Use for "/poc implement <name>" once the POC's gaps are closed.
 version: "0.1.0"
-documentation_url: https://github.com/DailybotHQ/POCDD
+documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 ---

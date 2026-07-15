@@ -2,10 +2,10 @@
 name: pocdd
 description: POC Driven Development — own a complex feature in one self-contained file under .pocs/, shape it by closing gaps, then implement it into the product. Routes the /poc command surface (create, work, status, list, implement, archive, remove, clear, verify) based on intent. Use when the developer wants to start, shape, inspect, or ship a POC-driven feature.
 version: "0.1.0"
-documentation_url: https://github.com/DailybotHQ/POCDD
+documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
-metadata: {"openclaw":{"emoji":"🧪","homepage":"https://github.com/DailybotHQ/POCDD","requires":{"anyBins":["git","bash"]}}}
+metadata: {"openclaw":{"emoji":"🧪","homepage":"https://github.com/DailybotHQ/pocdd-skill","requires":{"anyBins":["git","bash"]}}}
 ---
 
 # POCDD — POC Driven Development (Router)

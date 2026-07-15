@@ -2,7 +2,7 @@
 name: pocdd-verify
 description: Validate that a POC file is well-formed against the POCDD conventions — status header, the three sections, gaps tagged by owner with ids, findings with provenance, and decision gaps carrying an assumption + link. Read-only pass/fail. Use for "/poc verify <name>".
 version: "0.1.0"
-documentation_url: https://github.com/DailybotHQ/POCDD
+documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob
 ---
