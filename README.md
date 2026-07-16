@@ -1,3 +1,7 @@
+<div align="center">
+
+![POCDD](./docs/pocdd.png)
+
 # POCDD — Proof of Concept Driven Development
 
 **Models matter. Context matters more.**
@@ -6,6 +10,8 @@
 [![Format: Open Agent Skills](https://img.shields.io/badge/format-Open%20Agent%20Skills-blue.svg)](https://agentskills.io)
 [![CI](https://github.com/DailybotHQ/pocdd-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/DailybotHQ/pocdd-skill/actions/workflows/ci.yml)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+</div>
 
 POCDD is a methodology — and an installable agent skill — for building complex
 product features with AI agents. For each feature you own **one self-contained
