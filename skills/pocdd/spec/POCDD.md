@@ -57,7 +57,7 @@ Everything in POCDD revolves around a single file living under `.pocs/` at the
 repo root (a sibling to the production sub-repos — never inside one of them).
 **`.pocs/` is gitignored in its entirety** — POC files are per-developer working
 state, not committed source (the durable record is this methodology plus whatever
-graduates into `docs/` and the product). This mirrors DeepWorkPlan's `.dwp/`.
+graduates into `docs/` and the product).
 
 **Rules of the artifact:**
 
