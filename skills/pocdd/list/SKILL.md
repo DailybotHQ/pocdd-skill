@@ -1,7 +1,7 @@
 ---
 name: pocdd-list
 description: List every POC in .pocs/ with its phase and gap counts (split by [agent]/[user]). Read-only. Use for "/poc list" or "show the pocs".
-version: "0.1.0"
+version: "0.2.0"
 documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob
@@ -22,7 +22,7 @@ For each file, read its header/sections and print a compact table:
 | POC | Format | Phase | `[agent]` gaps | `[user]` gaps |
 |-----|--------|-------|----------------|----------------|
 
-- **Format** = the extension (`.md` reasoned / `.py`,`.js`,… runnable).
+- **Format** = the extension (`.md` reasoned / `.py`,`.js`,`.go`,… runnable).
 - A POC with `0 / 0` gaps and phase `ready-to-implement` is ready for
   `/poc implement`.
 - If `.pocs/` is empty or absent, say so and suggest `/poc <SOURCE>` to start one.

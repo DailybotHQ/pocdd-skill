@@ -1,7 +1,7 @@
 ---
 name: pocdd-clear
 description: Wipe the .pocs/ directory after confirmation. Use for "/poc clear". Destructive — always confirm and show what will be removed first.
-version: "0.1.0"
+version: "0.2.0"
 documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Glob

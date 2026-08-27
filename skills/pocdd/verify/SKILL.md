@@ -1,7 +1,7 @@
 ---
 name: pocdd-verify
 description: Validate that a POC file is well-formed against the POCDD conventions — status header, the three sections, gaps tagged by owner with ids, findings with provenance, and decision gaps carrying an assumption + link. Read-only pass/fail. Use for "/poc verify <name>".
-version: "0.1.0"
+version: "0.2.0"
 documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob
@@ -27,8 +27,8 @@ asserts:
 | **Goal** | a non-empty `Goal` section |
 | **Implementation** | an `Implementation` section present |
 | **Remaining gaps** | a `Remaining gaps` section present |
-| **Gap tagging** | every listed gap has an id (`G<n>`) and an owner (`[agent]` / `[user]`) |
-| **Done consistency** | `ready-to-implement` ⇒ no gaps; gaps present ⇒ not `ready-to-implement` |
+| **Gap tagging** | every listed gap under Remaining gaps has an id (`G<n>`) and an owner (`[agent]` / `[user]`) |
+| **Done consistency** | `ready-to-implement` ⇒ no owned gaps under Remaining gaps |
 
 It prints `PASS` / `FAIL` per file with the specific failing lines, and exits
 non-zero if any file fails — so it can gate `/poc implement`.

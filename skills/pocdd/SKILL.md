@@ -1,7 +1,7 @@
 ---
 name: pocdd
 description: POC Driven Development — own a complex feature in one self-contained file under .pocs/, shape it by closing gaps, then implement it into the product. Routes the /poc command surface (create, work, status, list, implement, archive, remove, clear, verify) based on intent. Use when the developer wants to start, shape, inspect, or ship a POC-driven feature.
-version: "0.1.0"
+version: "0.2.0"
 documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
@@ -17,9 +17,11 @@ under `.pocs/` — the *prompt*, the *spec*, and the *handoff* in a single artif
 An agent shapes that file by **closing gaps** until nothing blocks the goal, then
 the proven result is implemented into the product.
 
-The full methodology and philosophy live in [`spec/POCDD.md`](spec/POCDD.md). The
-operational contract every sub-skill relies on lives in
-[`shared/conventions.md`](shared/conventions.md). **Read both before acting.**
+**Before acting, read only** [`shared/conventions.md`](shared/conventions.md) —
+that is the operational contract. Do **not** load long methodology docs unless
+the developer asks or you are stuck on a rule.
+
+Profile: `mid` · gaps per `/poc work` pass: **2**
 
 ---
 

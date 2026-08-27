@@ -1,7 +1,7 @@
 ---
 name: pocdd-status
 description: Report the status of a single POC file — phase, findings, and remaining gaps split by [agent]/[user], plus what is blocking and the suggested next action. Read-only. Use for "/poc status <name>" or "what's left on <name>".
-version: "0.1.0"
+version: "0.2.0"
 documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob
@@ -20,8 +20,9 @@ Read-only deep status of one POC. Resolve it with `pocdd_resolve <name>` from
   `[user]` (awaiting a human decision), each by id and one-line summary.
 - **Blocking now** — the `[user]` gaps and, for each, the default assumption the
   POC is currently running with.
-- **Next action** — concretely: `/poc work <name>` if `[agent]` gaps remain;
-  "resolve N decisions" if only `[user]` gaps remain; `/poc implement <name>` if
+- **Next action** — concretely: `/poc work <name>` if `[agent]` gaps remain
+  (this install closes at most **2** per pass); "resolve N
+  decisions" if only `[user]` gaps remain; `/poc implement <name>` if
   `ready-to-implement`.
 
 Do not modify the file.

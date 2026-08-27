@@ -23,7 +23,7 @@ Goal
 
 Context (current code)
 ----------------------
-<Production paths this feature will extend, by path: repo/app/file.py:NN>
+<Production paths this feature will extend, by path: path/to/file.ext:NN>
 
 Implementation
 --------------

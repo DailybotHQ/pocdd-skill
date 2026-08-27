@@ -1,21 +1,31 @@
 # POCDD conventions (shared operational contract)
 
-The authoritative methodology is [`../spec/POCDD.md`](../spec/POCDD.md). This file
-is the terse contract every `/poc` sub-skill depends on — read it before acting on
-any POC file.
+This is the terse contract every `/poc` sub-skill depends on — read it before
+acting on any POC file. Full methodology (optional, human-facing) lives in the
+repo docs, not in this pack.
+
+## Profile
+
+- **profile:** `mid`
+- **gaps_per_pass:** close at most **2** `[agent]` gap(s) per
+  `/poc work` invocation, then stop and report remaining work.
+
+## Layout
+
+Cite product code by path relative to the repo root (path/to/file.ext:LINE) — never paste production code into the POC.
 
 ## The artifact
 
 - **One feature = one file** under `.pocs/` (gitignored). If it balloons, the
   "feature" is several — split it.
 - **Format follows the risk:**
-  - **runnable** (`.py` / `.js` / …) when the hard part is *unknown external or
-    runtime behavior* (API, OAuth, sync math, time zones) — the header is the
-    spec, the body is the proof.
+  - **runnable** (`.py` / `.js` / `.go` / …) when the hard part is *unknown
+    external or runtime behavior* (API, OAuth, sync math, time zones) — the
+    header is the spec, the body is the proof.
   - **`.md`** when the hard part is *internal/domain complexity* (refactor,
     cross-module wiring, product rules) — no runtime to prove.
 - The file **owns** goals, findings, decisions, contract, and what-to-do; it
-  **references the codebase by path** (`repo/path/file.py:120`) — never pastes
+  **references the codebase by path** (`path/to/file.ext:120`) — never pastes
   production code into itself.
 - **Secrets stay out.** Tokens live under gitignored `.pocs/` paths; prefer
   sandbox/test accounts and short-lived, least-scope tokens.
@@ -59,6 +69,13 @@ ones. Always run a **failure-mode sweep** for anything touching an external syst
 auth & token refresh, pagination, rate limits, partial failures, retries /
 idempotency, malformed or missing data, time zones. A POC is only as good as its
 gap list.
+
+## Stack commands (this install)
+
+Languages: **python,md**
+
+- **Python runnable POC:** `python .pocs/<name>.py --probe` / `--demo` (optional `--json`). Done-checks often use `pytest`.
+- **Markdown reasoned POC:** no runtime — prove by reading code paths and writing findings with provenance.
 
 ## Done
 

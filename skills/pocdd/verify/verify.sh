@@ -7,6 +7,34 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=../shared/context.sh
 . "$HERE/../shared/context.sh"
 
+# Extract the "Remaining gaps" body (from section header to next ## or
+# py-template Title+---- section, or EOF). Gap checks only use this slice so
+# mentions of G1 in Findings do not false-fail ready-to-implement.
+remaining_gaps_body() {
+  local f="$1"
+  awk '
+    BEGIN { in_sec = 0 }
+    {
+      low = tolower($0)
+      if (!in_sec) {
+        if (index(low, "remaining gaps") > 0) { in_sec = 1; next }
+        next
+      }
+      if ($0 ~ /^##[[:space:]]/) exit
+      if ($0 ~ /^[A-Za-z][A-Za-z0-9 _()/.-]*$/ && length($0) < 48) {
+        title = $0
+        if ((getline nxt) > 0) {
+          if (nxt ~ /^-{3,}/) exit
+          print title
+          print nxt
+          next
+        }
+      }
+      print
+    }
+  ' "$f"
+}
+
 verify_one() {
   local f="$1" name errs=()
   name="$(basename "$f")"
@@ -18,20 +46,20 @@ verify_one() {
   grep -Eqi 'implementation'                       "$f" || errs+=("missing 'Implementation' section")
   grep -Eqi 'remaining gaps'                        "$f" || errs+=("missing 'Remaining gaps' section")
 
-  # Every gap reference (G<n>) must carry an [agent]/[user] owner on its line.
-  local gap_lines owner_missing
-  gap_lines="$(grep -En '\bG[0-9]+\b' "$f" || true)"
+  local gaps_body gap_lines owner_missing
+  gaps_body="$(remaining_gaps_body "$f")"
+
+  gap_lines="$(printf '%s\n' "$gaps_body" | grep -En '\bG[0-9]+\b' || true)"
   if [ -n "$gap_lines" ]; then
     owner_missing="$(printf '%s\n' "$gap_lines" | grep -Ev '\[(agent|user)\]' || true)"
     if [ -n "$owner_missing" ]; then
-      errs+=("gap line(s) missing [agent]/[user] owner, e.g. line $(printf '%s' "$owner_missing" | head -1 | cut -d: -f1)")
+      errs+=("gap line(s) missing [agent]/[user] owner under Remaining gaps, e.g. $(printf '%s' "$owner_missing" | head -1)")
     fi
   fi
 
-  # Done consistency: ready-to-implement implies no open owned gaps.
   if grep -Eqi 'phase:[[:space:]]*ready-to-implement' "$f"; then
-    if grep -Eq '\bG[0-9]+\b.*\[(agent|user)\]' "$f"; then
-      errs+=("phase is 'ready-to-implement' but open gaps remain")
+    if printf '%s\n' "$gaps_body" | grep -Eq '\bG[0-9]+\b.*\[(agent|user)\]'; then
+      errs+=("phase is 'ready-to-implement' but open gaps remain under Remaining gaps")
     fi
   fi
 
