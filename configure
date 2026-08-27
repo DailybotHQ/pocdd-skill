@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Thin wrapper — see build/configure.sh for the real generator.
+exec "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/build/configure.sh" "$@"
