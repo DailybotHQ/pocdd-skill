@@ -1,7 +1,7 @@
 ---
 name: pocdd-work
 description: Run the POCDD gap-closing loop on an existing POC file — close [agent] investigation gaps autonomously (at most gaps_per_pass per invocation), defer [user] decision gaps with a recorded assumption, and advance the file toward ready-to-implement without ever stopping execution. Use for "/poc work <name>" or "close the gaps".
-version: "0.2.0"
+version: "{{VERSION}}"
 documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
@@ -13,14 +13,14 @@ This is the heart of POCDD. Read [`../shared/conventions.md`](../shared/conventi
 first. Resolve the target with `pocdd_resolve <name>` from
 [`../shared/context.sh`](../shared/context.sh).
 
-**Budget:** close at most **2** `[agent]` gap(s) per `/poc work`
-invocation (profile `mid`). Then stop, summarize, and invite another pass.
+**Budget:** close at most **{{GAPS_PER_PASS}}** `[agent]` gap(s) per `/poc work`
+invocation (profile `{{PROFILE}}`). Then stop, summarize, and invite another pass.
 
 ## The loop
 
 1. **Load the POC fully** — Goal, Implementation, Remaining gaps, `phase`. Set
    `phase: shaping`.
-2. **Work up to 2 `[agent]` gap(s)** in id order:
+2. **Work up to {{GAPS_PER_PASS}} `[agent]` gap(s)** in id order:
    - Do the investigation: run the script (for runnable POCs, with the relevant
      flags), read the referenced code paths, or diff output against expectations.
    - Capture the result as a **Finding** in **Implementation**, tagged with

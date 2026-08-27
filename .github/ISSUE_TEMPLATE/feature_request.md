@@ -19,6 +19,6 @@ labels: enhancement
 
 ## Scope
 
-- [ ] Affects a `/poc` command (`skills/pocdd/<cmd>/`)
-- [ ] Affects the methodology (`spec/POCDD.md` + `shared/conventions.md`)
-- [ ] Affects repo infrastructure (docs, CI, scripts)
+- [ ] Affects a `/poc` command (`build/fragments/skills/<cmd>/` → regenerate)
+- [ ] Affects the methodology (`docs/POCDD.md` + `build/fragments/conventions/`)
+- [ ] Affects repo infrastructure (docs, CI, scripts, configure)

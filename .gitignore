@@ -1,6 +1,9 @@
 # POC working state — never commit. POCDD files are per-developer, per-feature
-# context, not source. This mirrors DeepWorkPlan's .dwp/ convention.
+# context, not source.
 .pocs/
+
+# Local configure profile (machine-specific). Re-run ./configure to regenerate.
+.pocdd/
 
 # Python / tooling noise
 __pycache__/

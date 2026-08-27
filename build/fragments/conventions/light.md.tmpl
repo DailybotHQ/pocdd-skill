@@ -1,0 +1,48 @@
+# POCDD conventions (light)
+
+Operational contract for this install. Read this before acting — nothing else
+is required.
+
+## Profile
+
+- **profile:** `{{PROFILE}}`
+- **gaps_per_pass:** close at most **{{GAPS_PER_PASS}}** `[agent]` gap(s) per
+  `/poc work` call, then stop and summarize.
+
+## Layout
+
+{{LAYOUT_HINT}}
+
+## Artifact
+
+- One feature = one file under `.pocs/` (gitignored).
+- Format: runnable when external/runtime behavior is unknown; `.md` when
+  complexity is internal.
+- Reference code by path; never paste production code. Secrets stay out.
+
+## Three sections
+
+1. **Goal** — the target.
+2. **Implementation** — Findings (with provenance) + Directives (with done-checks).
+3. **Remaining gaps** — worklist; done when empty.
+
+`phase: spike | shaping | ready-to-implement | not-viable`
+
+## Gaps
+
+- Ids `G1…`; owners `[agent]` (investigate) or `[user]` (decide).
+- Decisions never stop execution: record assumption + link, keep going.
+- Closing an `[agent]` gap moves the result into Implementation.
+
+## Seeding (create)
+
+Failure-mode sweep for externals: auth/token refresh, pagination, rate limits,
+partial failures, retries/idempotency, malformed data, time zones.
+
+## Stack commands
+
+{{STACK_COMMANDS}}
+
+## Done
+
+`ready-to-implement` = no gaps left. `not-viable` is a valid terminal outcome.

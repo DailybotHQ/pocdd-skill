@@ -1,7 +1,7 @@
 ---
 name: pocdd-create
 description: Create a new POC-driven feature file under .pocs/ from any source (a sentence, an issue, a document, a URL). Picks the file format by risk, writes the Goal, and seeds Remaining gaps including a failure-mode sweep. Use for "/poc <SOURCE>" or "start a POC for X".
-version: "0.2.0"
+version: "{{VERSION}}"
 documentation_url: https://github.com/DailybotHQ/pocdd-skill
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
@@ -12,7 +12,7 @@ allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 Bootstrap one self-contained POC file from a **SOURCE**. First read
 [`../shared/conventions.md`](../shared/conventions.md).
 
-Configured languages for this install: **python,md**
+Configured languages for this install: **{{STACK_LANGS}}**
 
 ## Inputs
 
@@ -28,8 +28,7 @@ a path to a document, or a provider URL. (`/poc create <SOURCE>` and bare
 2. **Choose the format by risk** (see conventions):
    - *Unknown external/runtime behavior* (API, OAuth, sync, time zones) →
      **runnable** file from the templates that match this install:
-     - Python: copy [`../templates/poc.py`](../templates/poc.py)
-     - Markdown: copy [`../templates/poc.md`](../templates/poc.md)
+{{TEMPLATE_CHOICES}}
    - *Internal/domain complexity* (refactor, wiring, product rules) → **`.md`**
      when available in this install.
    - When in doubt, prefer the runnable form if there is *any* external system to
@@ -46,7 +45,7 @@ a path to a document, or a provider URL. (`/poc create <SOURCE>` and bare
    anything external (auth/token refresh, pagination, rate limits, partial
    failures, retries/idempotency, malformed data, time zones).
 7. **Report**: the file path, format chosen (and why), and the seeded gap list
-   split by owner. Suggest `/poc work <name>` next (at most **2**
+   split by owner. Suggest `/poc work <name>` next (at most **{{GAPS_PER_PASS}}**
    `[agent]` gaps close per work pass on this install).
 
 ## Guardrails

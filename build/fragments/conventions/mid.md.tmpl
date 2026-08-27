@@ -6,13 +6,13 @@ repo docs, not in this pack.
 
 ## Profile
 
-- **profile:** `mid`
-- **gaps_per_pass:** close at most **2** `[agent]` gap(s) per
+- **profile:** `{{PROFILE}}`
+- **gaps_per_pass:** close at most **{{GAPS_PER_PASS}}** `[agent]` gap(s) per
   `/poc work` invocation, then stop and report remaining work.
 
 ## Layout
 
-Cite product code by path relative to the repo root (path/to/file.ext:LINE) — never paste production code into the POC.
+{{LAYOUT_HINT}}
 
 ## The artifact
 
@@ -72,10 +72,9 @@ gap list.
 
 ## Stack commands (this install)
 
-Languages: **python,md**
+Languages: **{{STACK_LANGS}}**
 
-- **Python runnable POC:** `python .pocs/<name>.py --probe` / `--demo` (optional `--json`). Done-checks often use `pytest`.
-- **Markdown reasoned POC:** no runtime — prove by reading code paths and writing findings with provenance.
+{{STACK_COMMANDS}}
 
 ## Done
 

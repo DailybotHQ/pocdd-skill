@@ -1,18 +1,20 @@
-# POCDD conventions (shared operational contract)
+# POCDD conventions (full operational contract)
 
-This is the terse contract every `/poc` sub-skill depends on — read it before
-acting on any POC file. Full methodology (optional, human-facing) lives in the
-repo docs, not in this pack.
+This is the contract every `/poc` sub-skill depends on — read it before acting.
+Human-facing methodology (philosophy, design decisions, when-to-use) lives in
+`docs/POCDD.md` in the skill repository — load it only if stuck or the developer
+asks; do not load it on every turn.
 
 ## Profile
 
-- **profile:** `mid`
-- **gaps_per_pass:** close at most **2** `[agent]` gap(s) per
-  `/poc work` invocation, then stop and report remaining work.
+- **profile:** `{{PROFILE}}`
+- **gaps_per_pass:** close at most **{{GAPS_PER_PASS}}** `[agent]` gap(s) per
+  `/poc work` invocation, then stop and report remaining work. Prefer smaller
+  passes when the POC file or tool output is large.
 
 ## Layout
 
-Cite product code by path relative to the repo root (path/to/file.ext:LINE) — never paste production code into the POC.
+{{LAYOUT_HINT}}
 
 ## The artifact
 
@@ -26,9 +28,10 @@ Cite product code by path relative to the repo root (path/to/file.ext:LINE) — 
     cross-module wiring, product rules) — no runtime to prove.
 - The file **owns** goals, findings, decisions, contract, and what-to-do; it
   **references the codebase by path** (`path/to/file.ext:120`) — never pastes
-  production code into itself.
+  production code into itself. This is what keeps the file bounded.
 - **Secrets stay out.** Tokens live under gitignored `.pocs/` paths; prefer
-  sandbox/test accounts and short-lived, least-scope tokens.
+  sandbox/test accounts and short-lived, least-scope tokens — never paste
+  production secrets into the file.
 
 ## The three sections (every POC file has exactly these)
 
@@ -43,8 +46,6 @@ Cite product code by path relative to the repo root (path/to/file.ext:LINE) — 
 
 ## Status header
 
-Every POC file starts with a status line:
-
 ```
 phase: spike | shaping | ready-to-implement | not-viable
 ```
@@ -57,29 +58,31 @@ phase: spike | shaping | ready-to-implement | not-viable
 - **Decisions never stop execution.** When the agent hits a `[user]` gap it:
   1. records a **default assumption** to proceed with, and
   2. **links** the dependent work (e.g. *"Implementation §4 assumes G3 = hourly"*).
-  Then it keeps going. When the user later resolves the gap differently, every
-  linked section is flagged for revision.
+  Then it keeps going.
 - **Closing an `[agent]` gap** moves its proven result into **Implementation**
   (with provenance) and removes it from Remaining gaps. It may spawn new gaps.
 
 ## Seeding gaps (the highest-value step)
 
-On create, enumerate the gaps you *don't yet know you have* — not just the obvious
-ones. Always run a **failure-mode sweep** for anything touching an external system:
-auth & token refresh, pagination, rate limits, partial failures, retries /
-idempotency, malformed or missing data, time zones. A POC is only as good as its
-gap list.
+On create, enumerate the gaps you *don't yet know you have*. Always run a
+**failure-mode sweep** for anything touching an external system: auth & token
+refresh, pagination, rate limits, partial failures, retries / idempotency,
+malformed or missing data, time zones. A POC is only as good as its gap list.
 
 ## Stack commands (this install)
 
-Languages: **python,md**
+Languages: **{{STACK_LANGS}}**
 
-- **Python runnable POC:** `python .pocs/<name>.py --probe` / `--demo` (optional `--json`). Done-checks often use `pytest`.
-- **Markdown reasoned POC:** no runtime — prove by reading code paths and writing findings with provenance.
+{{STACK_COMMANDS}}
+
+## Implementation stage reminders
+
+When porting a `ready-to-implement` POC: lift pure domain first, wrap with
+framework boundaries, mirror proven behavior, UI last. Keep runnable POCs as
+parity oracles via `/poc archive` when useful.
 
 ## Done
 
-- **`ready-to-implement`** = Remaining gaps is empty: no `[agent]` gaps left to
-  prove and no `[user]` gaps left to decide.
-- **`not-viable`** is a valid terminal outcome: if a gap reveals the goal is
-  infeasible or too costly, record the finding that killed it and stop.
+- **`ready-to-implement`** = Remaining gaps is empty.
+- **`not-viable`** is a valid terminal outcome: record the finding that killed
+  the goal and stop.
