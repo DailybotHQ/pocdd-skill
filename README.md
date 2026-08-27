@@ -15,10 +15,8 @@ the proven result is implemented into the product.
 
 - **License:** [MIT](LICENSE)
 - **Format:** [Open Agent Skills](https://agentskills.io) standard (Markdown-only)
-- **Methodology:** [`skills/pocdd/spec/POCDD.md`](skills/pocdd/spec/POCDD.md)
-
-> Inspired by [DeepWorkPlan](https://github.com/DailybotHQ/deepworkplan-skill),
-> built lean for a single methodology and one command surface.
+- **Methodology:** [`docs/POCDD.md`](docs/POCDD.md) (human-facing)
+- **Agent pack:** generated `skills/pocdd/` — slim by design; tune with `./configure`
 
 ---
 
@@ -27,6 +25,7 @@ the proven result is implemented into the product.
 - [The idea in one breath](#the-idea-in-one-breath)
 - [The `/poc` commands](#the-poc-commands)
 - [Install](#install)
+- [Configure (light pack / Ollama)](#configure-light-pack--ollama)
 - [How to use](#how-to-use)
 - [The `.pocs/` convention](#the-pocs-convention)
 - [Repository layout](#repository-layout)
@@ -52,7 +51,7 @@ the agent records a default assumption, links the affected work, and keeps going
 | Command | What it does |
 |---------|--------------|
 | `/poc SOURCE` | Create a POC from any source (sentence, issue, doc, URL); picks format by risk and seeds gaps |
-| `/poc work <name>` | Run the gap-closing loop (the engine) |
+| `/poc work <name>` | Run the gap-closing loop (at most `gaps_per_pass` `[agent]` gaps per call) |
 | `/poc status <name>` | Detailed status of one POC (gaps split by `[agent]`/`[user]`) |
 | `/poc list` | List all POCs with phase + gap counts |
 | `/poc verify <name>` | Validate a POC file is well-formed (pass/fail) |
@@ -66,20 +65,56 @@ the agent records a default assumption, links the affected work, and keeps going
 
 ## Install
 
-Pick whichever fits your setup — all four leave `skills/pocdd/` discoverable by
-your agent.
+Six install paths, from easiest to most manual. All leave `skills/pocdd/` discoverable
+by your agent. If you're unsure, use **Method 2** (`npx skills add`) or **Method 1**
+(ask your agent).
 
-### Ask your agent
+### Quick comparison
 
-Paste this to any coding agent (Cursor, Claude Code, Copilot, …):
+| Method | When to use | TL;DR |
+|--------|-------------|-------|
+| 1. Ask your agent | Zero ceremony — paste a prompt | *"Install POCDD from `DailybotHQ/pocdd-skill`"* |
+| 2. `npx skills add` (recommended) | Any agent, Node available | `npx skills add DailybotHQ/pocdd-skill` |
+| 3. curl `setup.sh` | No Node, want a one-liner | `curl …/setup.sh \| bash` |
+| 4. Git clone + `setup.sh` | Explicit control, optional `./configure` | `git clone … && ./setup.sh` |
+| 5. Manual per-agent | One agent, no symlink script | clone/symlink into `~/.<agent>/skills/pocdd` |
+| 6. Try without installing | One-off session, no disk write | `npx skills use DailybotHQ/pocdd-skill@pocdd` |
 
-> Install the POCDD agent skill from the `DailybotHQ/pocdd-skill` repo (it follows
-> the Open Agent Skills standard). Run `npx skills add DailybotHQ/pocdd-skill`, or
-> clone the repo and run `./setup.sh`. Then use the `/poc` commands.
+The published pack is the **committed mid default** (Python + Markdown templates,
+`gaps_per_pass=2`). To retune after install, clone the repo and run `./configure`.
 
-### Package runner — `skills` CLI (cross-agent, recommended)
+### Method 1 — Ask your agent (prompt install)
 
-Use the runner for whichever package manager you have — same command:
+Paste one of these into **any** coding agent that can run shell commands or clone
+repos (Cursor, Claude Code, Codex, Copilot, Windsurf, Cline, Gemini CLI, OpenClaw,
+Antigravity, …):
+
+**Short**
+
+> Install the POCDD agent skill: run `npx skills add DailybotHQ/pocdd-skill`.
+
+**Full (recommended)**
+
+> Install the POCDD agent skill from
+> https://github.com/DailybotHQ/pocdd-skill (Open Agent Skills standard).
+> Prefer `npx skills add DailybotHQ/pocdd-skill` (or `pnpm dlx` / `yarn dlx` /
+> `bunx` with the same command). If Node isn't available, clone the repo and run
+> `./setup.sh`. On a low-RAM or Ollama machine, also run `./configure` so the pack
+> stays light (`gaps_per_pass=1`). Then I can use `/poc` commands.
+
+**Point at the skill file**
+
+> Fetch https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/skills/pocdd/SKILL.md
+> and install this skill pack into my agent's skills directory.
+
+Agents with WebFetch can read the repo README or `SKILL.md` and follow the install
+steps themselves — same pattern as conversational installs for other Open Agent
+Skills packs.
+
+### Method 2 — `skills` CLI (cross-agent, recommended)
+
+Uses the [skills.sh](https://skills.sh) CLI ([Vercel skills](https://github.com/vercel-labs/skills)).
+Auto-detects installed agents and links `skills/pocdd/` into each one's skills dir.
 
 ```bash
 npx     skills add DailybotHQ/pocdd-skill   # npm
@@ -88,151 +123,222 @@ yarn dlx skills add DailybotHQ/pocdd-skill  # yarn
 bunx    skills add DailybotHQ/pocdd-skill   # bun
 ```
 
-Add `-g` for a global install and `-a <agent>` to target one agent (e.g.
-`-a cursor`). See the [Skills CLI](https://github.com/vercel-labs/skills) docs.
+Useful flags:
 
-### curl (no Node required)
+| Flag | Purpose |
+|------|---------|
+| `--list` | Show skills in the repo without installing |
+| `-a <agents>` | Install for specific agents only (comma-separated) |
+| `-g, --global` | Install globally (`~/.<agent>/skills/`) instead of project-level |
+| `--copy` | Copy files instead of symlinking |
+| `-y` | Skip prompts (CI-friendly) |
+| `--all` | Shorthand for `--skill '*' --agent '*' -y` |
 
-Self-contained installer — clones into a cache dir and links it into every agent
-it detects:
+Per-agent examples (`-a` names match the [Skills CLI](https://github.com/vercel-labs/skills) registry):
+
+```bash
+# One agent
+npx skills add DailybotHQ/pocdd-skill -a claude-code -y
+npx skills add DailybotHQ/pocdd-skill -a cursor -y
+npx skills add DailybotHQ/pocdd-skill -a codex -y
+npx skills add DailybotHQ/pocdd-skill -a windsurf -y
+npx skills add DailybotHQ/pocdd-skill -a github-copilot -y
+npx skills add DailybotHQ/pocdd-skill -a cline -y
+npx skills add DailybotHQ/pocdd-skill -a gemini-cli -y
+npx skills add DailybotHQ/pocdd-skill -a opencode -y
+npx skills add DailybotHQ/pocdd-skill -a openclaw -y
+npx skills add DailybotHQ/pocdd-skill -a antigravity -y
+
+# Several agents at once
+npx skills add DailybotHQ/pocdd-skill -a claude-code,cursor,codex -y
+
+# Every agent the CLI knows about
+npx skills add DailybotHQ/pocdd-skill --all
+```
+
+**Supported clients** (non-exhaustive — the CLI also supports Amp, Continue, Crush,
+Devin, Junie, Kilo, Roo, Trae, Zed, and [many more](https://skills.sh)):
+Claude Code, Cursor, OpenAI Codex, Windsurf, GitHub Copilot, Cline, Gemini CLI,
+OpenCode, OpenClaw, Antigravity.
+
+**Project vs global:** project install drops the pack under the repo (e.g.
+`.agents/skills/pocdd/` when the repo uses an `.agents/` harness, or the agent's
+project skills path). Global install (`-g`) puts it in `~/.<agent>/skills/pocdd`.
+
+Update later: `npx skills update DailybotHQ/pocdd-skill` · Uninstall:
+`npx skills remove pocdd`
+
+### Method 3 — curl (no Node required)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash
-# target one agent:
-curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash -s -- --host claude
+# one agent:
+curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash -s -- --host cursor
 ```
 
-### Git clone + setup
+`setup.sh` accepts `--host` values: `claude`, `cursor`, `codex`, `windsurf`,
+`copilot`, `cline`, `gemini`, `opencode`, `antigravity` (maps to each agent's
+`~/.<agent>/skills/` path — see Method 5 table).
+
+### Method 4 — Git clone + `setup.sh`
 
 ```bash
 git clone https://github.com/DailybotHQ/pocdd-skill.git ~/pocdd-skill
-cd ~/pocdd-skill && ./setup.sh     # auto-detect installed agents
-./setup.sh --host claude           # or target one agent explicitly
+cd ~/pocdd-skill
+./configure          # recommended on Ollama / low-RAM — asks with recommendations
+./setup.sh           # symlink into detected agents
+./setup.sh --host claude
 ```
 
-`setup.sh` symlinks `skills/pocdd/` into your agent's skills directory so the
-router and every `/poc` sub-command are discoverable.
+`setup.sh` can also run configure for you: `./setup.sh --configure --yes`.
+
+### Method 5 — Manual per-agent
+
+Symlink or clone into the agent's skills directory. POCDD ships as **one** router
+pack (`skills/pocdd/`); link that folder as `pocdd`:
+
+```bash
+# Example: Claude Code
+ln -sfn ~/pocdd-skill/skills/pocdd ~/.claude/skills/pocdd
+
+# Example: Cursor
+ln -sfn ~/pocdd-skill/skills/pocdd ~/.cursor/skills/pocdd
+```
+
+| Agent | Skills path | `setup.sh --host` | `skills add -a` |
+|-------|-------------|-------------------|-----------------|
+| Claude Code | `~/.claude/skills/pocdd` | `claude` | `claude-code` |
+| Cursor | `~/.cursor/skills/pocdd` | `cursor` | `cursor` |
+| OpenAI Codex | `~/.codex/skills/pocdd` | `codex` | `codex` |
+| Windsurf | `~/.codeium/windsurf/skills/pocdd` | `windsurf` | `windsurf` |
+| GitHub Copilot | `~/.copilot/skills/pocdd` | `copilot` | `github-copilot` |
+| Cline | `~/.cline/skills/pocdd` | `cline` | `cline` |
+| Gemini CLI | `~/.gemini/skills/pocdd` | `gemini` | `gemini-cli` |
+| OpenCode | `~/.config/opencode/skills/pocdd` | `opencode` | `opencode` |
+| Antigravity | `~/.antigravity/skills/pocdd` | `antigravity` | `antigravity` |
+| OpenClaw | workspace or `~/.openclaw/skills/pocdd` | — | `openclaw` |
+
+### Method 6 — Try without installing
+
+Generate a one-shot prompt that loads the skill for a single session (no symlink):
+
+```bash
+npx skills use DailybotHQ/pocdd-skill@pocdd
+npx skills use DailybotHQ/pocdd-skill --skill pocdd --agent claude-code
+```
+
+### Verify
+
+Restart the agent session (skills are discovered at session start). Then ask:
+*"what pocdd skills are available?"* — you should see `pocdd` (and sub-skills if
+your agent surfaces them). Or check disk:
+
+```bash
+ls -la ~/.cursor/skills/pocdd   # adjust path for your agent
+```
 
 ### Invoke
-
-Describe what you want and the agent routes to the right sub-skill, or call a
-command directly:
 
 - "start a POC for Google Calendar OOO sync" → **pocdd-create**
 - "work the calendar poc" / "close the gaps" → **pocdd-work**
 - "what's left on calendar?" → **pocdd-status**
 
+## Configure (light pack / Ollama)
+
+`./configure` **builds** `skills/pocdd/` from `build/fragments/` for *this*
+machine and stack. It asks three questions and offers a recommendation for each:
+
+| Question | Detection | Recommendation |
+|----------|-----------|----------------|
+| **POC languages** | `pyproject.toml` / `package.json` / `go.mod` | Detected stack + Markdown |
+| **Gaps per `/poc work` pass** | RAM (`MemAvailable`) + discrete VRAM (`nvidia-smi` / `rocm-smi`) | See table below |
+| **Repo layout** | `repositories/`, `apps/`, `packages/`, `src/` | Cite-path hint baked into conventions |
+
+**RAM / VRAM → gaps + profile**
+
+| Hardware | `gaps_per_pass` | conventions profile |
+|----------|-----------------|---------------------|
+| RAM &lt; 8 GiB, or no discrete VRAM and RAM &lt; 12 GiB | **1** | `light` |
+| RAM &lt; 16 GiB | **2** | `mid` |
+| else, or discrete VRAM ≥ 8 GiB | **3** | `full` |
+
+Examples:
+
+```bash
+./configure                          # interactive
+./configure --yes                    # accept all recommendations
+./configure --yes --lang python,md --gaps 1 --profile light --layout single_root
+```
+
+Answers are saved under `.pocdd/profile.json` (gitignored). Re-run anytime.
+
+> **Tip — cheap enough for small models.** Seed gaps once with a stronger model
+> (or carefully by hand) at `/poc create`, then let a small local model close
+> **one gap per pass** after `./configure` chooses `gaps=1`.
+
 ## How to use
 
-A typical feature flows through five steps.
-
-**1. Create** a POC from any source — a sentence, an issue, a doc, or a URL:
+**1. Create** a POC from any source:
 
 ```
 /poc "sync Google Calendar out-of-office into Dailybot time-off"
 ```
 
-This creates one file in `.pocs/`, picks the format by risk (runnable `.py`/`.js`
-when there's external behavior to prove, `.md` otherwise), writes the **Goal**, and
-**seeds the gaps** — including a failure-mode sweep (auth/token refresh, pagination,
-rate limits, partial failures, time zones).
-
-**2. Shape it** — run the gap-closing engine:
+**2. Shape it** — run the gap-closing engine (budget = your configured
+`gaps_per_pass`):
 
 ```
 /poc work calendar
 ```
 
-The agent closes the `[agent]` investigation gaps itself (running, reading, proving)
-and moves each result into **Implementation** with provenance. Decisions it can't
-make become `[user]` gaps: it records a default assumption, links the affected work,
-and **keeps going**. At the end of a pass it surfaces the open decisions in a batch.
+**3. Resolve decisions, then loop** until Remaining gaps is empty
+(`ready-to-implement`) — or the POC concludes `not-viable`.
 
-**3. Resolve decisions, then loop.** Answer the `[user]` gaps and run `/poc work`
-again. Repeat until **Remaining gaps** is empty (`ready-to-implement`) — or the POC
-concludes `not-viable`, which is a valid, cheap outcome.
+**4. Inspect any time:** `/poc status`, `/poc list`, `/poc verify`.
 
-**4. Inspect any time:**
-
-```
-/poc status calendar   # phase + gaps split by [agent]/[user] + next action
-/poc list              # every POC with phase + gap counts
-/poc verify calendar   # pass/fail well-formedness (gates implement)
-```
-
-**5. Implement**, then retire:
-
-```
-/poc implement calendar   # port the proven Implementation into the product
-/poc archive calendar     # keep it as a parity/regression oracle …
-/poc remove calendar      # … or delete it
-```
-
-> **Tip — cheap enough for small models.** Front-load the reasoning by seeding a
-> good gap list once (a strong model or a human at `create`), then let a smaller
-> model close gaps one at a time. Trust comes from each directive's runnable
-> done-check, not from model size.
+**5. Implement**, then `/poc archive` or `/poc remove`.
 
 ## The `.pocs/` convention
 
 All POC files live under `.pocs/` at the repo root — **gitignored in its
-entirety**. POC files are per-developer working state, not committed source; the
-durable record is this methodology plus whatever graduates into `docs/` and the
-product. Override the location with `POCS_DIR`.
+entirety**. Override with `POCS_DIR`.
 
 ## Repository layout
 
 ```text
 pocdd-skill/
-├── skills/pocdd/            # ← the product (everything that ships)
-│   ├── SKILL.md             # router — owns the /poc command surface
-│   ├── shared/              # context.sh + conventions.md sourced by sub-skills
-│   ├── spec/POCDD.md        # the canonical methodology
-│   ├── templates/           # poc.md / poc.py starting points
-│   ├── create/  work/  status/  list/  verify/    # one folder per /poc subcommand
-│   └── implement/  archive/  remove/  clear/
-├── docs/DESIGN.md           # the "why" behind the lean structure
-├── scripts/check.sh         # one-command checks (also run in CI)
-├── setup.sh                 # symlink installer for local/manual installs
-├── AGENTS.md                # rules for agents working ON this repo
-├── CONTRIBUTING.md          # rules for humans working ON this repo
-├── SECURITY.md              # what not to put in a POC + how to report issues
-└── CHANGELOG.md
+├── build/                   # authoring sources → ./configure generates the pack
+│   ├── configure.sh
+│   ├── detect.sh
+│   └── fragments/
+├── configure                # wrapper → build/configure.sh
+├── skills/pocdd/            # ← generated product (what agents load)
+├── docs/POCDD.md            # full methodology (human-facing)
+├── docs/DESIGN.md
+├── scripts/check.sh
+├── setup.sh
+└── …
 ```
 
 ## Local development
 
-You don't need a language toolchain — the skill is Markdown plus a couple of Bash
-helpers. To validate a change the way CI does, run the check script:
-
 ```bash
-./scripts/check.sh
+./configure --yes --lang python,md --gaps 2 --profile mid --layout single_root
+./scripts/check.sh          # includes installation validation (setup.sh in a temp HOME)
 ```
 
-It runs `bash -n` on every shell script, validates each `SKILL.md`'s frontmatter,
-and exercises `skills/pocdd/verify/verify.sh` against the templates. To try the
-skill against a real agent, symlink it into your agent's skills directory:
-
-```bash
-./setup.sh --host claude    # or: cursor, codex, copilot, gemini
-```
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full workflow (branch, checks,
-commit format, PR) and [`AGENTS.md`](AGENTS.md) for the agent-facing contract.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`AGENTS.md`](AGENTS.md).
 
 ## What ships
 
-Only [`skills/pocdd/`](skills/pocdd/) is the product. Everything else
-(`README.md`, `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, `setup.sh`,
-`scripts/`, `docs/`, `.github/`) is repository infrastructure and is **not**
-installed by `npx skills` or `setup.sh`.
+Only [`skills/pocdd/`](skills/pocdd/) is the product. `build/`, `docs/`, `setup.sh`,
+`configure`, and the rest are repository infrastructure and are **not** what
+`npx skills` installs as runtime agent context (the CLI copies/links the skill
+folder; configure lives in the clone for retuning).
 
 ## Contributing
 
-New contributors: start with [`CONTRIBUTING.md`](CONTRIBUTING.md) — it covers
-local setup, the one-command check, commit format, and the PR flow. The
-agent-facing contract (ship boundary, `SKILL.md` frontmatter, versioning) lives in
-[`AGENTS.md`](AGENTS.md), and the design rationale in
+Start with [`CONTRIBUTING.md`](CONTRIBUTING.md). Design rationale:
 [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Powered by Dailybot

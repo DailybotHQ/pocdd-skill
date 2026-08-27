@@ -20,25 +20,34 @@ git push -u origin HEAD     # then open a PR into main
 
 An installable, cross-agent **agent skill** that implements the POCDD
 methodology — Markdown plus a couple of small Bash helpers, following the
-[Open Agent Skills](https://agentskills.io) standard, MIT-licensed. There is no
-build step and no language runtime to install.
+[Open Agent Skills](https://agentskills.io) standard, MIT-licensed. The agent
+pack under `skills/pocdd/` is **generated** by `./configure` from
+`build/fragments/`.
 
 ## The ship boundary (read this first)
 
 **Only [`skills/pocdd/`](skills/pocdd/) ships.** Everything else — `README.md`,
-`AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, `setup.sh`, `scripts/`, `docs/`,
-`.github/` — is repository infrastructure. The skill must run correctly for
-someone who installed **only** `skills/pocdd/`, so nothing under it may reference
-those repo-dev files at runtime. `./scripts/check.sh` enforces this.
+`AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, `setup.sh`, `configure`, `build/`,
+`scripts/`, `docs/`, `.github/` — is repository infrastructure. The skill must
+run correctly for someone who installed **only** `skills/pocdd/`, so nothing
+under it may reference those repo-dev files at runtime. `./scripts/check.sh`
+enforces this.
 
 ## Making a change
 
 | You're changing… | Also update… |
 |---|---|
-| A `/poc` command's behavior | that command's `skills/pocdd/<cmd>/SKILL.md` |
-| The methodology (gaps, phases, three sections, done criteria) | `skills/pocdd/spec/POCDD.md` **and** `skills/pocdd/shared/conventions.md`, plus the spec's "Design decisions" table |
-| Any `SKILL.md` frontmatter | keep the `version` in lockstep across **all** `SKILL.md` files |
+| A `/poc` command's behavior | the fragment under `build/fragments/skills/<cmd>/`, then `./configure --yes …` |
+| The methodology (gaps, phases, three sections, done criteria) | `docs/POCDD.md` **and** `build/fragments/conventions/*.md.tmpl`, then regenerate |
+| `gaps_per_pass` / profile / languages | `build/configure.sh` + `build/detect.sh`; regenerate the committed mid pack |
+| Any `SKILL.md` frontmatter | keep the `version` in lockstep (also `VERSION` in `build/configure.sh`) |
 | Anything user-visible | `CHANGELOG.md` |
+
+Regenerate the committed default pack after fragment edits:
+
+```bash
+./configure --yes --lang python,md --gaps 2 --profile mid --layout single_root
+```
 
 ### SKILL.md frontmatter contract
 
@@ -71,6 +80,9 @@ It validates:
 2. **Frontmatter** — required keys present and `version` in lockstep.
 3. **Well-formedness** — `verify.sh` passes against the shipped templates.
 4. **Ship boundary** — `skills/pocdd/` references nothing repo-dev at runtime.
+5. **Light-context** — no mandatory full-spec load; `gaps_per_pass` baked in.
+6. **Configure determinism** — identical `./configure --yes` mid runs match.
+7. **Installation validation** — `setup.sh` links a loadable pack in an isolated HOME.
 
 ## Trying the skill locally
 
