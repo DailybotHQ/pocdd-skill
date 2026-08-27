@@ -16,6 +16,6 @@
 - [ ] `./scripts/check.sh` passes locally
 - [ ] Changes stay within the **ship boundary** (only `skills/pocdd/` ships)
 - [ ] `SKILL.md` `version` kept in lockstep across all skills (if frontmatter changed)
-- [ ] Methodology changes updated **both** `spec/POCDD.md` and `shared/conventions.md`
+- [ ] Methodology / pack changes updated **fragments + `docs/POCDD.md`**, then regenerated via `./configure`
 - [ ] `CHANGELOG.md` updated for any user-visible change
 - [ ] Commit messages follow Conventional Commits
