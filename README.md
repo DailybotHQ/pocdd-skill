@@ -95,18 +95,22 @@ Paste one of these into **any** coding agent that can run shell commands or clon
 repos (Cursor, Claude Code, Codex, Copilot, Windsurf, Cline, Gemini CLI, OpenClaw,
 Antigravity, …):
 
-**Short**
+**Short (curl per agent — no Node needed)**
 
-> Install the POCDD agent skill: run `npx skills add DailybotHQ/pocdd-skill`.
+> Install POCDD via curl for my agent:
+>   claude:   `curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash -s -- --host claude`
+>   cursor:   `curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash -s -- --host cursor`
+>   opencode: `curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash -s -- --host opencode`
+>   codex:    `curl -fsSL https://raw.githubusercontent.com/DailybotHQ/pocdd-skill/main/setup.sh | bash -s -- --host codex`
+>   claude-code / windsurf / cline / gemini-cli / antigravity also supported via --host.
 
-**Full (recommended)**
+**Full (recommended when Node available)**
 
 > Install the POCDD agent skill from
 > https://github.com/DailybotHQ/pocdd-skill (Open Agent Skills standard).
-> Prefer `npx skills add DailybotHQ/pocdd-skill` (or `pnpm dlx` / `yarn dlx` /
-> `bunx` with the same command). If Node isn't available, clone the repo and run
-> `./setup.sh`. On a low-RAM or Ollama machine, also run `./configure` so the pack
-> stays light (`gaps_per_pass=1`). Then I can use `/poc` commands.
+> Prefer `pnpm dlx skills add DailybotHQ/pocdd-skill` (or `yarn dlx` / `bunx`).
+> If Node isn't available use the curl one-liner above with `--host <agent>`.
+> On low-RAM/Ollama also run `./configure` (`gaps_per_pass=1`). Then I can use `/poc`.
 
 **Point at the skill file**
 
